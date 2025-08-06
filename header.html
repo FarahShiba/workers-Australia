@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workers Australia - Professional Staffing Solutions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            color: #333;
+            min-height: 200vh; /* For scroll demonstration */
+            background-color: #f5f5f5;
+        }
+
+        /* === UPDATED TOP BAR & HEADER STYLES FOR GLASS EFFECT === */
+        .top-bar {
+            background-color: transparent; /* Made transparent to show wrapper's glass effect */
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+
+        .top-bar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .top-bar .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .top-bar .contact-item:hover {
+            color: #1e3a8a;
+        }
+        
+        .top-bar .contact-methods {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .top-bar .separator {
+            border-left: 1px solid #dcdcdc;
+            height: 16px;
+        }
+        
+        .header-wrapper {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            /* Glassmorphism Effect */
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); /* For Safari */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* Softened shadow */
+        }
+        /* === END OF UPDATED STYLES === */
+
+
+        .header {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+        }
+
+        /* Logo */
+        .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+        }
+
+        /* Navigation */
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: #1e3a8a;
+        }
+
+        /* Dropdown Arrow */
+        .dropdown-arrow {
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-item:hover .dropdown-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* Dropdown Menu */
+        .dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: white;
+            min-width: 280px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        /* Mega Menu */
+        .mega-dropdown {
+            position: absolute;
+            top: 100%;
+            left: -200px;
+            background-color: white;
+            min-width: 900px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            border-radius: 8px; 
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            padding: 0;
+            display: flex;
+            overflow: hidden; 
+        }
+
+        /* Left Sidebar in Mega Menu */
+        .mega-sidebar {
+            background-color: #f8f9fa;
+            padding: 30px;
+            min-width: 200px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .mega-sidebar-title {
+            color: #2563eb;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-decoration: none;
+            display: block;
+            transition: color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .mega-sidebar-title:hover {
+            color: #1e40af;
+        }
+
+        .mega-sidebar-item {
+            display: block;
+            padding: 10px 0;
+            color: #666;
+            text-decoration: none;
+            font-size: 15px;
+            transition: color 0.3s ease;
+            text-transform: capitalize;
+        }
+
+        .mega-sidebar-item:hover {
+            color: #2563eb;
+        }
+
+        /* Main Content Area */
+        .mega-content {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 45px; 
+            flex: 1;
+        }
+
+        .nav-item:hover .dropdown,
+        .nav-item:hover .mega-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-category {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .category-title {
+            font-size: 16px; 
+            font-weight: 600;
+            color: #333; 
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            border-bottom: 1px solid #f0f0f0;
+            white-space: nowrap;
+        }
+
+        .mega-dropdown .dropdown-item {
+            padding: 10px 0; 
+            border: none;
+            font-size: 15px;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f8f8;
+            color: #1e3a8a;
+        }
+
+        .mega-dropdown .dropdown-item:hover {
+            background-color: transparent;
+            color: #1e3a8a;
+            transform: translateX(5px);
+        }
+
+        /* Apply Button */
+        .apply-btn {
+            background-color: #1e3a8a;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .apply-btn:hover {
+            background-color: #1e40af;
+        }
+
+        /* Hero Section (for demonstration) */
+        .hero {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%);
+            color: white;
+            padding: 100px 20px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+        
+        /* === MEGA MENU: HIRE TALENT === */
+        .hire-mega-dropdown {
+            left: -510px; 
+            min-width: 1200px; 
+        }
+        .hire-mega-dropdown .mega-content {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        .hire-mega-dropdown .mega-sidebar-title {
+            cursor: default;
+        }
+        .hire-mega-dropdown .mega-sidebar-title:hover {
+            color: #2563eb; 
+        }
+        /* === END: HIRE TALENT === */
+
+        /* === MEGA MENU: BECOME A SUPPORT WORKER === */
+        .bsw-mega-dropdown {
+            left: -350px; 
+            min-width: 1100px;
+            padding: 0;
+        }
+        .bsw-mega-dropdown .bsw-cta {
+            flex: 0 0 320px;
+            background-color: #1e3a8a;
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+        }
+        .bsw-mega-dropdown .bsw-cta img {
+            width: 100%;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            object-fit: cover; 
+        }
+        .bsw-mega-dropdown .bsw-cta h3 {
+            font-size: 22px;
+            line-height: 1.3;
+            margin-bottom: 15px;
+        }
+        .bsw-mega-dropdown .bsw-cta p {
+            font-size: 15px;
+            line-height: 1.6;
+            opacity: 0.9;
+            flex-grow: 1;
+        }
+        .bsw-mega-dropdown .bsw-content {
+            padding: 40px;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+        }
+        .bsw-mega-dropdown .bsw-column h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 25px;
+        }
+        .bsw-mega-dropdown .info-block {
+            margin-bottom: 25px;
+        }
+        .bsw-mega-dropdown .info-block a {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e3a8a;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 5px;
+            transition: color 0.3s ease;
+        }
+        .bsw-mega-dropdown .info-block a:hover {
+            color: #2563eb;
+        }
+        .bsw-mega-dropdown .info-block p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        /* === END: BECOME A SUPPORT WORKER === */
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .hire-mega-dropdown {
+                left: -600px;
+            }
+        }
+        
+        @media (max-width: 1024px) {
+            .nav-menu {
+                gap: 20px;
+            }
+            .dropdown {
+                min-width: 220px;
+            }
+            .hire-mega-dropdown {
+                left: -650px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .top-bar-content {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start;
+            }
+            .top-bar .contact-methods {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            .top-bar .separator {
+                display: none;
+            }
+
+            .mobile-menu-toggle { display: block; }
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%; left: 0; right: 0;
+                background-color: white;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            .nav-menu.active { display: flex; }
+            .nav-item { width: 100%; }
+            .dropdown, .mega-dropdown {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                margin-top: 10px;
+                padding: 0;
+                min-width: 100%;
+                left: 0;
+                flex-direction: column;
+            }
+            .mega-sidebar, .bsw-mega-dropdown .bsw-cta {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+                flex-basis: auto;
+            }
+            .mega-content, .bsw-mega-dropdown .bsw-content {
+                padding: 20px;
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .dropdown-category, .bsw-mega-dropdown .info-block { margin-bottom: 20px; }
+            .category-title { font-size: 16px; margin-bottom: 10px; }
+            .hero h1 { font-size: 36px; }
+            .hero p { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-content">
+            <a href="#" class="contact-item">
+                <span>📍</span>
+                <span>Office 112, 43 Danaher Drive, South Morang Victoria 3752, Australia</span>
+            </a>
+            <div class="contact-methods">
+                <a href="mailto:admin@workersaustralia.com.au" class="contact-item">
+                    <span>✉️</span>
+                    <span>admin@workersaustralia.com.au</span>
+                </a>
+                <div class="separator"></div>
+                <a href="tel:0390699955" class="contact-item">
+                    <span>📞</span>
+                    <span>039 069 9955</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <header class="header-wrapper">
+        <div class="header">
+            <a href="/" class="logo">
+                <img src="https://worker-australia.nubevest.co.uk/wp-content/uploads/2025/03/workers-australia.png" alt="Workers Australia">
+            </a>
+
+            <nav>
+                <ul class="nav-menu" id="navMenu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">About Us</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            Services
+                            <span class="dropdown-arrow">▼</span>
+                        </a>
+                        <div class="dropdown">
+                            <a href="#" class="dropdown-item">Registered Nurses</a>
+                            <a href="#" class="dropdown-item">Clinical Nurse Consultants</a>
+                            <a href="#" class="dropdown-item">Clinical Care Co-ordinators</a>
+                            <a href="#" class="dropdown-item">ANAC Champions</a>
+                            <a href="#" class="dropdown-item">Community Nurses</a>
+                            <a href="#" class="dropdown-item">Endorsed Enrolled Nurses</a>
+                            <a href="#" class="dropdown-item">Personal Care Attendants</a>
+                            <a href="#" class="dropdown-item">Hospitality Staff</a>
+                            <a href="#" class="dropdown-item">Medication Competent</a>
+                            <a href="#" class="dropdown-item">Dental Nurses</a>
+                            <a href="#" class="dropdown-item">Health Professional</a>
+                            <a href="#" class="dropdown-item">Care Facility</a>
+                            <a href="#" class="dropdown-item">Disability Support</a>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            Find Jobs
+                            <span class="dropdown-arrow">▼</span>
+                        </a>
+                        <div class="mega-dropdown">
+                            <div class="mega-sidebar">
+                                <a href="#" class="mega-sidebar-title">job search</a>
+                                <a href="#" class="mega-sidebar-item">Submit Your CV</a>
+                                <a href="#" class="mega-sidebar-item">Full-Time Roles</a>
+                                <a href="#" class="mega-sidebar-item">Part-Time Roles</a>
+                                <a href="#" class="mega-sidebar-item">Get In Touch</a>
+                            </div>
+                            <div class="mega-content">
+                                <div class="dropdown-category">
+                                    <h3 class="category-title">Professional Jobs</h3>
+                                    <a href="#" class="dropdown-item">Accounting & Finance</a>
+                                    <a href="#" class="dropdown-item">Banking Services</a>
+                                    <a href="#" class="dropdown-item">Business Analysis</a>
+                                    <a href="#" class="dropdown-item">Human Resources</a>
+                                </div>
+                                <div class="dropdown-category">
+                                    <h3 class="category-title">Digital Jobs</h3>
+                                    <a href="#" class="dropdown-item">Marketing & Communications</a>
+                                    <a href="#" class="dropdown-item">Web Developer</a>
+                                    <a href="#" class="dropdown-item">WordPress Developer</a>
+                                    <a href="#" class="dropdown-item">SEO Specialist</a>
+                                    <a href="#" class="dropdown-item">Sales Executive</a>
+                                </div>
+                                <div class="dropdown-category">
+                                    <h3 class="category-title">NDIS Support</h3>
+                                    <a href="#" class="dropdown-item">Aged Care Support</a>
+                                    <a href="#" class="dropdown-item">Child Care Services</a>
+                                    <a href="#" class="dropdown-item">Education Support</a>
+                                    <a href="#" class="dropdown-item">Disability Services</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            Hire Talent
+                            <span class="dropdown-arrow">▼</span>
+                        </a>
+                        <div class="mega-dropdown hire-mega-dropdown">
+                            <div class="mega-sidebar">
+                                <h3 class="mega-sidebar-title">employer portal</h3>
+                                <a href="#" class="mega-sidebar-item">post a job</a>
+                                <a href="#" class="mega-sidebar-item">browse candidates</a>
+                                <a href="#" class="mega-sidebar-item">recruitment solutions</a>
+                                <a href="#" class="mega-sidebar-item">employer resources</a>
+                            </div>
+                            <div class="mega-content">
+                                <div class="dropdown-category">
+                                    <h3 class="category-title">Professional</h3>
+                                    <a href="#" class="dropdown-item">Accounting & Finance</a>
+                                    <a href="#" class="dropdown-item">Administration & Support</a>
+                                    <a href="#" class="dropdown-item">Education</a>
+                                    <a href="#" class="dropdown-item">Healthcare</a>
+                                    <a href="#" class="dropdown-item">Marketing & Communications</a>
+                                    <a href="#" class="dropdown-item">Sales</a>
+                                </div>
+                                <div class="dropdown-category">
+                                    <h3 class="category-title">Digital</h3>
+                                    <a href="#" class="dropdown-item">SEO Specialist</a>
+                                    <a href="#" class="dropdown-item">WordPress Developer</a>
+                                </div>
+                                <div class="dropdown-category">
+                                    <h3 class="category-title">Be Aware</h3>
+                                    <a href="#" class="dropdown-item">Aged Care</a>
+                                    <a href="#" class="dropdown-item">Safeguarding Policy</a>
+                                    <a href="#" class="dropdown-item">Child Safety Policy & Procedures</a>
+                                    <a href="#" class="dropdown-item">Fraud Awareness</a>
+                                    <a href="#" class="dropdown-item">How to Recognize Scams</a>
+                                    <a href="#" class="dropdown-item">Report a Scam</a>
+                                </div>
+                                <div class="dropdown-category">
+                                    <h3 class="category-title">Career Advice</h3>
+                                    <a href="#" class="dropdown-item">Salary Checker</a>
+                                    <a href="#" class="dropdown-item">Best Jobs in 2025</a>
+                                    <a href="#" class="dropdown-item">Job Profiles</a>
+                                    <a href="#" class="dropdown-item">Finance & Accounting Community</a>
+                                    <a href="#" class="dropdown-item">Nursing Talent Community</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            Become a support worker
+                            <span class="dropdown-arrow">▼</span>
+                        </a>
+                        <div class="mega-dropdown bsw-mega-dropdown">
+                            <div class="bsw-cta">
+                                <img src="https://worker-australia.nubevest.co.uk/wp-content/uploads/2024/10/Untitled-design-23.png" alt="A support worker assisting a person.">
+                                <h3>Become an Independent Support Worker</h3>
+                                <p>Whether you’re experienced or just starting, explore how you can provide disability and aged care support with Workers Australia.</p>
+                                <a href="#" class="apply-btn" style="width: 100%; text-align: center;">Get Started Today</a>
+                            </div>
+                            <div class="bsw-content">
+                                <div class="bsw-column">
+                                    <h3>Getting started</h3>
+                                    <div class="info-block">
+                                        <a href="#">Becoming a Support Workers with Workers Australia</a>
+                                        <p>Connect with local clients seeking disability and aged care support through Workers Australia.</p>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="#">New to Support Work?</a>
+                                        <p>Visit our beginner's guide to becoming a support workers.</p>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="#">When and How You Get Paid</a>
+                                        <p>Learn about payment processes for support sessions through Workers Australia.</p>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="#">How to Succeed</a>
+                                        <p>Find helpful tips on succeeding as a support worker with Workers Australia.</p>
+                                    </div>
+                                </div>
+                                <div class="bsw-column">
+                                    <h3>Benefits</h3>
+                                    <div class="info-block">
+                                        <a href="#">Insurance</a>
+                                        <p>All support sessions booked through Workers Australia are covered by comprehensive insurance.</p>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="#">Training and Education</a>
+                                        <p>Access over 170 free courses on the Learning Hub after being approved as a support workers with Workers Australia.</p>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="#">Mental Health Support</a>
+                                        <p>Get free 24/7 access to counselling and mental health resources on the Wellbeing Platform.</p>
+                                    </div>
+                                    <div class="info-block">
+                                        <a href="#">Tax & Super Sync</a>
+                                        <p>Learn how support workers can manage tax and super with Workers Australia's business tools.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Pricing</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">Contact Us</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="apply-btn">APPLY NOW →</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <section class="hero">
+        <h1>Find Your Perfect Career Match</h1>
+        <p>Connecting talented professionals with leading Australian employers</p>
+    </section>
+
+    <script>
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const navMenu = document.getElementById('navMenu');
+        mobileMenuToggle.addEventListener('click', () => { navMenu.classList.toggle('active'); });
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.header') && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
